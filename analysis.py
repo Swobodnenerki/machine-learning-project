@@ -13,8 +13,8 @@ ranks = np.array(ranks)
 print("\nRanks:\n", ranks)
 
 mean_ranks = np.mean(ranks, axis=0)
-clfs = ['GNB PCA', 'GNB LDA', 'SVM PCA', 'SVM LDA', 'kNN PCA',
-            'kNN LDA', 'CART PCA', 'CART LDA']
+clfs = ['GNB PCA', 'GNB LDA', 'GNB KPCA', 'GNB InPCA', 'SVM PCA', 'SVM LDA', 'SVM KPCA', 'SVM InPCA',
+        'kNN PCA', 'kNN LDA', 'kNN KPCA', 'kNN InPCA', 'CART PCA', 'CART LDA', 'CART KPCA', 'CART InPCA']
 
 print("\nModels:\n", clfs)
 print("\nMean ranks:\n", mean_ranks)
@@ -26,7 +26,6 @@ p_value = np.zeros((len(clfs), len(clfs)))
 for i in range(len(clfs)):
     for j in range(len(clfs)):
         w_statistic[i, j], p_value[i, j] = ranksums(ranks.T[i], ranks.T[j])
-
 
 
 names_column = np.expand_dims(np.array(clfs), axis=1)
