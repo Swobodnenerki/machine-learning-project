@@ -3,6 +3,7 @@ from scipy.stats import rankdata, ranksums
 from tabulate import tabulate
 
 scores = np.load('./results.npy')
+
 mean_scores = np.mean(scores, axis=2).T
 print("\nMean scores:\n", mean_scores)
 

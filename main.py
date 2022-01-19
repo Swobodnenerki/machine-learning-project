@@ -20,10 +20,25 @@ from sklearn.preprocessing import StandardScaler
 from tqdm import tqdm
 
 clfs = {
-    'GNB': GaussianNB(),
-    'SVM': SVC(),
-    'kNN': KNeighborsClassifier(),
-    'CART': DecisionTreeClassifier(random_state=1234),
+    'GNB-PCA': (GaussianNB(), PCA()),
+    'GNB-LDA': (GaussianNB(), LDA()),
+    'GNB-KPCA': (GaussianNB(), KernelPCA()),
+    'GNB-InPCA': (GaussianNB(), IncrementalPCA()),
+
+    'SVM-PCA': (SVC(), PCA()),
+    'SVM-LDA': (SVC(), LDA()),
+    'SVM-KPCA': (SVC(), KernelPCA()),
+    'SVM-InPCA': (SVC(), IncrementalPCA()),
+
+    'kNN-PCA': (KNeighborsClassifier(), PCA()),
+    'kNN-LDA': (KNeighborsClassifier(), LDA()),
+    'kNN-KPCA': (KNeighborsClassifier(), KernelPCA()),
+    'kNN-InPCA': (KNeighborsClassifier(), IncrementalPCA()),
+
+    'CART-PCA': (DecisionTreeClassifier(random_state=1234), PCA()),
+    'CART-LDA': (DecisionTreeClassifier(random_state=1234), LDA()),
+    'CART-KPCA': (DecisionTreeClassifier(random_state=1234), KernelPCA()),
+    'CART-InPCA': (DecisionTreeClassifier(random_state=1234), IncrementalPCA()),
 }
 
 
@@ -57,7 +72,7 @@ exs = {
     'InPCA': IncrementalPCA(),
 }
 
-# datasets = ['balance', 'australian', 'yeast3', 'breastcan']
+# datasets = ['balance']
 datasets = ['balance', 'australian', 'breastcan', 'breastcancoimbra', 'diabetes', 'ecoli4', 'german', 'glass2', 'hayes', 'heart', 'iris', 'liver',
             'monkone', 'monkthree', 'page-blocks-1-3_vs_4', 'soybean', 'wine',
             'wisconsin', 'yeast3', 'yeast-2_vs_8']
@@ -67,7 +82,7 @@ n_repeats = 2
 rskf = RepeatedStratifiedKFold(
     n_splits=n_splits, n_repeats=n_repeats, random_state=1234)
 
-scores = np.zeros((len(clfs), n_datasets, n_splits * n_repeats, len(exs)))
+scores = np.zeros((len(clfs), n_datasets, n_splits * n_repeats))
 
 with tqdm(total=20) as pbar:
     for idx, dataset in enumerate(datasets):
@@ -80,17 +95,17 @@ with tqdm(total=20) as pbar:
             features_count = features_index + 1
             for fold_id, (train, test) in enumerate(rskf.split(X, y)):
                 for clf_id, clf_name in enumerate(clfs):
-                    for ex_id, ex_name in enumerate(exs):
-                        ex = clone(exs[ex_name])
-                        y_train, y_test = y[train], y[test]
-                        X_train, X_test = X[train], X[test]
-                        X_train, X_test = sprawdzenie(
-                            ex_name, X, y, train, test)
-                        clf = clone(clfs[clf_name])
-                        clf.fit(X_train, y_train)
-                        y_pred = clf.predict(X_test)
-                        scores[clf_id, idx, fold_id, ex_id] = accuracy_score(
-                            y_test, y_pred)
+                    ex = clone(clfs[clf_name][1])
+                    ex_name = clf_name.split('-')[1]
+                    y_train, y_test = y[train], y[test]
+                    X_train, X_test = X[train], X[test]
+                    X_train, X_test = sprawdzenie(
+                        ex_name, X, y, train, test)
+                    clf = clone(clfs[clf_name][0])
+                    clf.fit(X_train, y_train)
+                    y_pred = clf.predict(X_test)
+                    scores[clf_id, idx, fold_id] = accuracy_score(
+                        y_test, y_pred)
         pbar.update(1)
 
 
