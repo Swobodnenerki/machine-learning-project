@@ -44,7 +44,7 @@ clfs = {
 
 def sprawdzenie(ex_name, X, y, train, test):
     if(ex_name == 'PCA'):
-        pca = PCA(n_components=0.95)
+        pca = PCA(n_components=1)
         X_train = pca.fit_transform(X[train])
         X_test = pca.transform(X[test])
         return X_train, X_test

@@ -1,21 +1,34 @@
 import numpy as np
 from scipy.stats import rankdata, ranksums
 from tabulate import tabulate
+import pandas as pd
 
-scores = np.load('./results.npy')
+scores = np.load('./resultsCART.npy')
 
 mean_scores = np.mean(scores, axis=2).T
 print("\nMean scores:\n", mean_scores)
+# df = pd.DataFrame(mean_scores, columns=['GNB PCA', 'GNB LDA', 'GNB KPCA', 'GNB InPCA', 'SVM PCA', 'SVM LDA', 'SVM KPCA', 'SVM InPCA',
+#                                         'kNN PCA', 'kNN LDA', 'kNN KPCA', 'kNN InPCA', 'CART PCA', 'CART LDA', 'CART KPCA', 'CART InPCA'])
+df = pd.DataFrame(mean_scores, columns=[
+                  'PCA', 'LDA', 'KPCA', 'InPCA'])
+pf = df.round(3)
 
+print(pf)
 ranks = []
 for ms in mean_scores:
     ranks.append(rankdata(ms).tolist())
 ranks = np.array(ranks)
 print("\nRanks:\n", ranks)
+# df = pd.DataFrame(ranks, columns=['GNB PCA', 'GNB LDA', 'GNB KPCA', 'GNB InPCA', 'SVM PCA', 'SVM LDA', 'SVM KPCA', 'SVM InPCA',
+#                                   'kNN PCA', 'kNN LDA', 'kNN KPCA', 'kNN InPCA', 'CART PCA', 'CART LDA', 'CART KPCA', 'CART InPCA'])
+df = pd.DataFrame(
+    ranks, columns=['PCA', 'LDA', 'KPCA', 'InPCA'])
+print(df)
 
 mean_ranks = np.mean(ranks, axis=0)
-clfs = ['GNB PCA', 'GNB LDA', 'GNB KPCA', 'GNB InPCA', 'SVM PCA', 'SVM LDA', 'SVM KPCA', 'SVM InPCA',
-        'kNN PCA', 'kNN LDA', 'kNN KPCA', 'kNN InPCA', 'CART PCA', 'CART LDA', 'CART KPCA', 'CART InPCA']
+# clfs = ['GNB PCA', 'GNB LDA', 'GNB KPCA', 'GNB InPCA', 'SVM PCA', 'SVM LDA', 'SVM KPCA', 'SVM InPCA',
+#         'kNN PCA', 'kNN LDA', 'kNN KPCA', 'kNN InPCA', 'CART PCA', 'CART LDA', 'CART KPCA', 'CART InPCA']
+clfs = ['PCA', 'LDA', 'KPCA', 'InPCA']
 
 print("\nModels:\n", clfs)
 print("\nMean ranks:\n", mean_ranks)
